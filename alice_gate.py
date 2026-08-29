@@ -28,10 +28,20 @@ from routeur import Routeur, call_model
 app = Flask(__name__)
 CORS(app)
 
-routeur = Routeur(
-    chemin_carte="/home/alice/carte-vivante/cartes.json",
-    chemin_db="/home/alice/alicization/state/alicization.db",
-)
+# Chemins configurables pour le cloud (env) ; par défaut la machine d'Alice.
+_CARTE = os.environ.get(
+    "ALICE_CARTE", "/home/alice/carte-vivante/cartes.json")
+_DB = os.environ.get(
+    "ALICE_DB", "/home/alice/alicization/state/alicization.db")
+
+if os.path.dirname(_DB):
+    os.makedirs(os.path.dirname(_DB), exist_ok=True)
+if not os.path.exists(_CARTE):
+    os.makedirs(os.path.dirname(_CARTE), exist_ok=True)
+    with open(_CARTE, "w", encoding="utf-8") as _f:
+        _f.write('{"zones": []}')
+
+routeur = Routeur(chemin_carte=_CARTE, chemin_db=_DB)
 
 _jobs = {}
 _jobs_lock = threading.Lock()

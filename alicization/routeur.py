@@ -106,22 +106,31 @@ def call_model(messages, temperature=0.2, max_tokens=256):
     C'est comme quand tu demandes à un ami de t'aider à résoudre un problème.
     """
     import urllib.request
+    import os
+
+    # Paramétrable pour le cloud : par défaut le Qwen local d'Alice.
+    modele = os.environ.get("ALICE_BRAIN_MODEL", "qwen2.5-3b-instruct")
+    url = os.environ.get(
+        "ALICE_BRAIN_URL",
+        "http://192.168.1.61:8081/v1/chat/completions")
+    cle = os.environ.get("ALICE_BRAIN_API_KEY", "").strip()
 
     payload = {
-        "model": "qwen2.5-3b-instruct",
+        "model": modele,
         "messages": messages,
         "temperature": temperature,
         "max_tokens": max_tokens,
         "stream": False
     }
 
-    # L'adresse du cerveau d'Alice (sur la machine 192.168.1.61)
-    url = "http://192.168.1.61:8081/v1/chat/completions"
+    en_tetes = {"Content-Type": "application/json"}
+    if cle:
+        en_tetes["Authorization"] = "Bearer %s" % cle
 
     req = urllib.request.Request(
         url,
         data=json.dumps(payload).encode('utf-8'),
-        headers={"Content-Type": "application/json"}
+        headers=en_tetes
     )
 
     try:
