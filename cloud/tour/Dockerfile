@@ -10,6 +10,7 @@ RUN pip3 install --no-cache-dir --break-system-packages requests \
 COPY --chown=odoo:odoo custom-addons /mnt/extra-addons
 COPY --chown=odoo:odoo odoo.conf /etc/odoo/odoo.conf
 COPY --chown=odoo:odoo entrypoint.sh /entrypoint.sh
+COPY --chown=odoo:odoo probe_tour_actus.py /tmp/probe_tour_actus.py
 RUN chmod +x /entrypoint.sh
 
 USER odoo
