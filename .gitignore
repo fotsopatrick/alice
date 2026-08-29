@@ -1,0 +1,42 @@
+# Secrets
+.env
+*.key
+.ssh/
+
+# Données locales & état
+*.db
+*.db.hidden
+state/
+raw/
+
+# Logs
+*.log
+logs/
+
+# Modèles (lourds, jamais publiés)
+models/
+modeles/
+*.gguf
+*.bin
+*.safetensors
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+venv/
+alicization-venv/
+
+# Docs lourds
+docs/*.pdf
+
+# OS / temporaires
+.DS_Store
+Thumbs.db
+*.bak-*
+# Docs / ingest lourds
+*.pdf
+
+# Documents ingestés temporaires (contenus tiers)
+alicization/ingest/intake/
