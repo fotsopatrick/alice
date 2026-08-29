@@ -2,7 +2,7 @@ FROM odoo:18
 
 # Compat : requests est requis par les agents Chloé/Braignak.
 USER root
-RUN pip3 install --no-cache-dir requests \
+RUN pip3 install --no-cache-dir --break-system-packages requests \
     && apt-get update \
     && apt-get install -y --no-install-recommends postgresql-client curl \
     && rm -rf /var/lib/apt/lists/*
