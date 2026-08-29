@@ -3,7 +3,9 @@
 # L'image officielle Odoo lit HOST / PORT / USER / PASSWORD / DATABASE ; on les
 # alimente ici. db_host accepte soit un nom TCP (localhost), soit un chemin de
 # socket Cloud SQL (/cloudsql/<connexion>).
-set -e
+set -u
+
+echo "[boot] $(date -Is) — entrypoint, DB_NAME=${DB_NAME:-} HOST=${ODOO_DB_HOST:-} USER=${ODOO_DB_USER:-}"
 
 : "${DB_NAME:=tour_community}"
 : "${ODOO_DB_HOST:=localhost}"
@@ -26,6 +28,7 @@ if [ "${HOST#/}" = "$HOST" ]; then
     [ "$i" -ge 180 ] && break
     sleep 2
   done
+  echo "[boot] $(date -Is) — postgres prêt après ~${i}s"
 fi
 
 # Fichiers construits par Chloe : /tmp est le seul repertoire inscriptible
@@ -49,7 +52,13 @@ if [ "${CREATE_DB:-1}" = "1" ]; then
       PGPASSWORD="$PASSWORD" createdb -h "$HOST" -p "$PORT" -U "$USER" "$DATABASE" || true
   fi
 fi
+echo "[boot] $(date -Is) — base OK (ou créée), lancement d'odoo…"
 
-exec odoo --http-interface 0.0.0.0 --http-port 8069 \
+# On garde la main en cas d'echec (diagnostic ACI : logs visibles, exec possible).
+set +e
+odoo --http-interface 0.0.0.0 --http-port 8069 \
   -w "$ODOO_ADMIN_PASSWD" \
-  --db-filter "^$DATABASE$" "$@"
+  --db-filter "^$DATABASE$" "$@" 2>&1
+RC=$?
+echo "[boot] $(date -Is) — odoo EXITED rc=$RC (maintenu allumé pour diagnostic)"
+sleep 86400
