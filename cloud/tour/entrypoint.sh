@@ -58,7 +58,7 @@ echo "[boot] $(date -Is) — base OK (ou créée), lancement d'odoo…"
 set +e
 odoo --http-interface 0.0.0.0 --http-port 8069 \
   -w "$ODOO_ADMIN_PASSWD" \
-  --db-filter "^$DATABASE$" "$@" 2>&1
+  --db-filter "^$DATABASE$" 2>&1
 RC=$?
 echo "[boot] $(date -Is) — odoo EXITED rc=$RC (maintenu allumé pour diagnostic)"
 sleep 86400
