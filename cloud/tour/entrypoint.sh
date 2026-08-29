@@ -54,6 +54,16 @@ if [ "${CREATE_DB:-1}" = "1" ]; then
 fi
 echo "[boot] $(date -Is) — base OK (ou créée), lancement d'odoo…"
 
+# Initialisation optionnelle des modules (premier boot cloud / demo).
+if [ -n "${ODOO_MODULES:-}" ]; then
+  echo "[boot] $(date -Is) — init des modules : ${ODOO_MODULES}…"
+  odoo --http-interface 0.0.0.0 --http-port 8069 \
+    -w "$ODOO_ADMIN_PASSWD" \
+    --db-filter "^$DATABASE$" -d "$DATABASE" -i "$ODOO_MODULES" \
+    --stop-after-init 2>&1
+  echo "[boot] $(date -Is) — init terminé (rc=$? — poursuite serveur)"
+fi
+
 # On garde la main en cas d'echec (diagnostic ACI : logs visibles, exec possible).
 set +e
 odoo --http-interface 0.0.0.0 --http-port 8069 \
