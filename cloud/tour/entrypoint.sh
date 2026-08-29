@@ -18,6 +18,16 @@ export USER="$ODOO_DB_USER"
 export PASSWORD="$ODOO_DB_PASSWORD"
 export DATABASE="$DB_NAME"
 
+# Attend le PostgreSQL (ACI sidecar / Cloud SQL) avant de creer la base.
+if [ "${HOST#/}" = "$HOST" ]; then
+  i=0
+  while ! pg_isready -h "$HOST" -p "$PORT" -U "$USER" -q 2>/dev/null; do
+    i=$((i + 2))
+    [ "$i" -ge 180 ] && break
+    sleep 2
+  done
+fi
+
 # Fichiers construits par Chloe : /tmp est le seul repertoire inscriptible
 # sur Cloud Run. On le rend parametrable.
 export TOUR_APPS_DIR="${TOUR_APPS_DIR:-/var/lib/odoo/community-apps}"
